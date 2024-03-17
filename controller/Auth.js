@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt")
-const User = require("../models/User")
-const OTP = require("../models/OTP")
+const User = require("../modals/User")
+const OTP = require("../modals/OTP")
 const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
-const mailSender = require("../utils/mailSender")
-const { passwordUpdated } = require("../mail/templates/passwordUpdate")
-const Profile = require("../models/Profile")
+const mailSender = require("../utils/sendMail")
+//const { passwordUpdated } = require("../mail")
+const Profile = require("../modals/Profile")
 require("dotenv").config()
 
 // Signup Controller for Registering USers
@@ -75,9 +75,7 @@ exports.signup = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create the user
-    let approved = ""
-    approved === "Instructor" ? (approved = false) : (approved = true)
+    
 
     // Create the Additional Profile For User
     const profileDetails = await Profile.create({
@@ -93,9 +91,8 @@ exports.signup = async (req, res) => {
       contactNumber,
       password: hashedPassword,
       accountType: accountType,
-      approved: approved,
       additionalDetails: profileDetails._id,
-      image: "",
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     })
 
     return res.status(200).json({
@@ -117,10 +114,10 @@ exports.login = async (req, res) => {
   try {
     // Get email and password from request body
     const { email, password } = req.body
+    console.log(req.body)
 
     // Check if email or password is missing
     if (!email || !password) {
-      // Return 400 Bad Request status code with error message
       return res.status(400).json({
         success: false,
         message: `Please Fill up All the Required Fields`,
@@ -130,9 +127,8 @@ exports.login = async (req, res) => {
     // Find user with provided email
     const user = await User.findOne({ email }).populate("additionalDetails")
 
-    // If user not found with provided email
+   
     if (!user) {
-      // Return 401 Unauthorized status code with error message
       return res.status(401).json({
         success: false,
         message: `User is not Registered with Us Please SignUp to Continue`,
@@ -149,14 +145,15 @@ exports.login = async (req, res) => {
         }
       )
 
-      // Save token to user document in database
       user.token = token
       user.password = undefined
-      // Set cookie for token and return success response
+      
+
       const options = {
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         httpOnly: true,
       }
+
       res.cookie("token", token, options).status(200).json({
         success: true,
         token,
@@ -171,26 +168,21 @@ exports.login = async (req, res) => {
     }
   } catch (error) {
     console.error(error)
-    // Return 500 Internal Server Error status code with error message
     return res.status(500).json({
       success: false,
       message: `Login Failure Please Try Again`,
     })
   }
 }
+
 // Send OTP For Email Verification
 exports.sendotp = async (req, res) => {
   try {
     const { email } = req.body
 
-    // Check if user is already present
-    // Find user with provided email
-    const checkUserPresent = await User.findOne({ email })
-    // to be used in case of signup
+    const checkUserPresent = await User.findOne({ email });
 
-    // If user found with provided email
     if (checkUserPresent) {
-      // Return 401 Unauthorized status code with error message
       return res.status(401).json({
         success: false,
         message: `User is Already Registered`,
@@ -201,24 +193,33 @@ exports.sendotp = async (req, res) => {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
-    })
-    const result = await OTP.findOne({ otp: otp })
-    console.log("Result is Generate OTP Func")
+    });
+
+    const result = await OTP.findOne({ otp: otp });
     console.log("OTP", otp)
     console.log("Result", result)
+
     while (result) {
       otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
+        lowerCaseAlphabets: false,
+        specialChars: false,
       })
     }
+
+    // send mail with otp
+    mailSender(email,"Otp varifaction mail",otp);
+
     const otpPayload = { email, otp }
     const otpBody = await OTP.create(otpPayload)
-    console.log("OTP Body", otpBody)
+   
     res.status(200).json({
       success: true,
       message: `OTP Sent Successfully`,
       otp,
     })
+
+
   } catch (error) {
     console.log(error.message)
     return res.status(500).json({ success: false, error: error.message })

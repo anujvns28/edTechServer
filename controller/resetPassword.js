@@ -1,7 +1,9 @@
-const User = require("../models/User")
-const mailSender = require("../utils/mailSender")
+const User = require("../modals/User")
+const mailSender = require("../utils/sendMail")
 const bcrypt = require("bcrypt")
 const crypto = require("crypto")
+
+
 exports.resetPasswordToken = async (req, res) => {
   try {
     const email = req.body.email
@@ -24,8 +26,8 @@ exports.resetPasswordToken = async (req, res) => {
     )
     console.log("DETAILS", updatedDetails)
 
-    // const url = `http://localhost:3000/update-password/${token}`
-    const url = `https://studynotion-edtech-project.vercel.app/update-password/${token}`
+     const url = `http://localhost:3000/update-password/${token}`
+    // const url = `https://studynotion-edtech-project.vercel.app/update-password/${token}`
 
     await mailSender(
       email,
@@ -38,6 +40,7 @@ exports.resetPasswordToken = async (req, res) => {
       message:
         "Email Sent Successfully, Please Check Your Email to Continue Further",
     })
+    
   } catch (error) {
     return res.json({
       error: error.message,
@@ -46,6 +49,8 @@ exports.resetPasswordToken = async (req, res) => {
     })
   }
 }
+
+
 
 exports.resetPassword = async (req, res) => {
   try {
