@@ -1,7 +1,7 @@
 // Import necessary modules
-const Section = require("../models/Section")
-const SubSection = require("../models/Subsection")
-const { uploadImageToCloudinary } = require("../utils/imageUploader")
+const Section = require("../modals/Section")
+const SubSection = require("../modals/Subsection")
+const { uploadImageToCloudinary } = require("../utils/uploadImage")
 
 // Create a new sub-section for a given section
 exports.createSubSection = async (req, res) => {
@@ -9,11 +9,11 @@ exports.createSubSection = async (req, res) => {
     // Extract necessary information from the request body
     const { sectionId, title, description } = req.body
     const video = req.files.video
-
+    console.log(req.body)
     // Check if all necessary fields are provided
     if (!sectionId || !title || !description || !video) {
       return res
-        .status(404)
+        .status(500)
         .json({ success: false, message: "All Fields are Required" })
     }
     console.log(video)
@@ -54,11 +54,12 @@ exports.createSubSection = async (req, res) => {
 
 exports.updateSubSection = async (req, res) => {
   try {
+    
     const { sectionId, subSectionId, title, description } = req.body
     const subSection = await SubSection.findById(subSectionId)
 
     if (!subSection) {
-      return res.status(404).json({
+      return res.status(504).json({
         success: false,
         message: "SubSection not found",
       })
@@ -71,6 +72,9 @@ exports.updateSubSection = async (req, res) => {
     if (description !== undefined) {
       subSection.description = description
     }
+
+    console.log(req.files)
+
     if (req.files && req.files.video !== undefined) {
       const video = req.files.video
       const uploadDetails = await uploadImageToCloudinary(

@@ -1,11 +1,11 @@
-const Course = require("../models/Course")
-const Category = require("../models/Category")
-const Section = require("../models/Section")
-const SubSection = require("../models/Subsection")
-const User = require("../models/User")
-const { uploadImageToCloudinary } = require("../utils/imageUploader")
-const CourseProgress = require("../models/CourseProgress")
-const { convertSecondsToDuration } = require("../utils/secToDuration")
+const Course = require("../modals/Course")
+const Category = require("../modals/Category")
+const Section = require("../modals/Section")
+const SubSection = require("../modals/Subsection")
+const User = require("../modals/User")
+const { uploadImageToCloudinary } = require("../utils/uploadImage")
+const CourseProgress = require("../modals/CourseProgress")
+// const { convertSecondsToDuration } = require("../utils/secToDuration")
 // Function to create a new course
 exports.createCourse = async (req, res) => {
   try {
@@ -152,7 +152,7 @@ exports.editCourse = async (req, res) => {
       )
       course.thumbnail = thumbnailImage.secure_url
     }
-
+   
     // Update only the fields that are present in the request body
     for (const key in updates) {
       if (updates.hasOwnProperty(key)) {
@@ -166,6 +166,8 @@ exports.editCourse = async (req, res) => {
 
     await course.save()
 
+    console.log("IDhar take okk hai")
+
     const updatedCourse = await Course.findOne({
       _id: courseId,
     })
@@ -176,7 +178,6 @@ exports.editCourse = async (req, res) => {
         },
       })
       .populate("category")
-      .populate("ratingAndReviews")
       .populate({
         path: "courseContent",
         populate: {
@@ -326,7 +327,7 @@ exports.getCourseDetails = async (req, res) => {
       })
     })
 
-    const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
+    // const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
 
     return res.status(200).json({
       success: true,
@@ -356,7 +357,7 @@ exports.getFullCourseDetails = async (req, res) => {
         },
       })
       .populate("category")
-      .populate("ratingAndReviews")
+      
       .populate({
         path: "courseContent",
         populate: {
@@ -379,31 +380,13 @@ exports.getFullCourseDetails = async (req, res) => {
       })
     }
 
-    // if (courseDetails.status === "Draft") {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: `Accessing a draft course is forbidden`,
-    //   });
-    // }
-
-    let totalDurationInSeconds = 0
-    courseDetails.courseContent.forEach((content) => {
-      content.subSection.forEach((subSection) => {
-        const timeDurationInSeconds = parseInt(subSection.timeDuration)
-        totalDurationInSeconds += timeDurationInSeconds
-      })
-    })
-
-    const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
+   
 
     return res.status(200).json({
       success: true,
       data: {
         courseDetails,
-        totalDuration,
-        completedVideos: courseProgressCount?.completedVideos
-          ? courseProgressCount?.completedVideos
-          : [],
+        
       },
     })
   } catch (error) {

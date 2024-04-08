@@ -1,11 +1,11 @@
-const Profile = require("../models/Profile")
-const CourseProgress = require("../models/CourseProgress")
+const Profile = require("../modals/Profile")
+const CourseProgress = require("../modals/CourseProgress")
 
-const Course = require("../models/Course")
-const User = require("../models/User")
-const { uploadImageToCloudinary } = require("../utils/imageUploader")
+const Course = require("../modals/Course")
+const User = require("../modals/User")
 const mongoose = require("mongoose")
-const { convertSecondsToDuration } = require("../utils/secToDuration")
+const { uploadImageToCloudinary } = require("../utils/uploadImage")
+
 // Method for updating a profile
 exports.updateProfile = async (req, res) => {
   try {
@@ -17,16 +17,29 @@ exports.updateProfile = async (req, res) => {
       contactNumber = "",
       gender = "",
     } = req.body
-    const id = req.user.id
+
+    const id = req.body.userId
+
+    console.log(id,req.body,"priingi id")
+
+    
+  
 
     // Find the profile by id
     const userDetails = await User.findById(id)
+    if(!userDetails){
+      return res.status(500).json({
+        success:false,
+        message:"You are not vallied user"
+      })
+    }
+
     const profile = await Profile.findById(userDetails.additionalDetails)
 
     const user = await User.findByIdAndUpdate(id, {
       firstName,
       lastName,
-    })
+    },{new:true})
     await user.save()
 
     // Update the profile fields
@@ -116,8 +129,19 @@ exports.getAllUserDetails = async (req, res) => {
 
 exports.updateDisplayPicture = async (req, res) => {
   try {
+
     const displayPicture = req.files.displayPicture
-    const userId = req.user.id
+    const userId = req.body.userId
+    
+    console.log(req.body,"this is dipslpict")
+    
+    if(!displayPicture || !userId){
+      return res.status(500).json({
+        success:false,
+        message:"All fild required"
+      })
+    }
+
     const image = await uploadImageToCloudinary(
       displayPicture,
       process.env.FOLDER_NAME,
@@ -136,6 +160,7 @@ exports.updateDisplayPicture = async (req, res) => {
       data: updatedProfile,
     })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       success: false,
       message: error.message,

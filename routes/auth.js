@@ -7,6 +7,7 @@ const {
   login,
   signup,
   sendotp,
+  changePassword,
 } = require("../controller/Auth")
 
 const {resetPassword,resetPasswordToken} = require("../controller/resetPassword")
@@ -29,7 +30,7 @@ router.post("/signup", signup)
 router.post("/sendotp", sendotp)
 
 // Route for Changing the password
-//router.post("/changepassword", auth, changePassword)
+router.post("/changepassword",changePassword)
 
 // ********************************************************************************************************
 //                                      Reset Password
