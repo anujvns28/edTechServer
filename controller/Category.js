@@ -46,13 +46,13 @@ exports.showAllCategories = async (req, res) => {
 exports.categoryPageDetails = async (req, res) => {
   try {
     const { categoryId } = req.body
-
+    console.log(req.body)
     // Get courses for the specified category
     const selectedCategory = await Category.findById(categoryId)
       .populate({
         path: "courses",
-        match: { status: "Published" },
-        populate: "ratingAndReviews",
+        //match: { status: "Published" },
+        // populate: "ratingAndReviews",
       })
       .exec()
 
@@ -65,13 +65,13 @@ exports.categoryPageDetails = async (req, res) => {
         .json({ success: false, message: "Category not found" })
     }
     // Handle the case when there are no courses
-    if (selectedCategory.courses.length === 0) {
-      console.log("No courses found for the selected category.")
-      return res.status(404).json({
-        success: false,
-        message: "No courses found for the selected category.",
-      })
-    }
+    // if (selectedCategory.courses.length === 0) {
+    //   console.log("No courses found for the selected category.")
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "No courses found for the selected category.",
+    //   })
+    // }
 
     // Get courses for other categories
     const categoriesExceptSelected = await Category.find({
@@ -83,10 +83,12 @@ exports.categoryPageDetails = async (req, res) => {
     )
       .populate({
         path: "courses",
-        match: { status: "Published" },
+        // match: { status: "Published" },
       })
       .exec()
-    console.log()
+
+      console.log(differentCategory,"this is diff")
+   
     // Get top-selling courses across all categories
     const allCategories = await Category.find()
       .populate({

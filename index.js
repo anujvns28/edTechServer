@@ -4,6 +4,7 @@ const app = express();
 const authRoute = require("./routes/auth")
 const profileRoute = require("./routes/profile")
 const courseRoute = require("./routes/course")
+const paymentRoute = require("./routes/payment")
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const { cloudinaryConnect } = require("./config/cloudenary");
@@ -29,7 +30,7 @@ app.use(cors({}))
 app.use("/api/v1/auth",authRoute);
 app.use("/api/v1/profile",profileRoute)
 app.use("/api/v1/course",courseRoute)
-
+app.use("/api/v1/payment",paymentRoute);
 
 app.listen(PORT , () => {
     console.log("server started successfully")
