@@ -31,10 +31,12 @@ const {
   createSubSection,
   updateSubSection,
   deleteSubSection,
+  fetchSubSection
 } = require("../controller/Subsection")
 
 
 const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
+const { createRating, getAllRatingReview, getAverageRating } = require("../controller/RatingandReview")
 
 // ********************************************************************************************************
 //                                      Course routes
@@ -56,6 +58,8 @@ router.post("/updateSubSection", auth, isInstructor, updateSubSection)
 router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
 // Add a Sub Section to a Section
 router.post("/addSubSection", auth, isInstructor, createSubSection)
+// fetch sub Section to a Section
+router.post("/fetchSubSection", auth, isStudent, fetchSubSection)
 // Get all Courses Under a Specific Instructor
 router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
 // // Get all Registered Courses
@@ -81,8 +85,8 @@ router.post("/getCategoryPageDetails", categoryPageDetails)
 // ********************************************************************************************************
 //                                      Rating and Review
 // ********************************************************************************************************
-// router.post("/createRating", auth, isStudent, createRating)
-// router.get("/getAverageRating", getAverageRating)
-// router.get("/getReviews", getAllRatingReview)
+ router.post("/createRating", auth, isStudent, createRating)
+ router.post("/getAverageRating", getAverageRating)
+ router.get("/getReviews", getAllRatingReview)
 
 module.exports = router

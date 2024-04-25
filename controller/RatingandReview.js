@@ -1,5 +1,5 @@
-const RatingAndReview = require("../models/RatingandReview")
-const Course = require("../models/Course")
+const RatingAndReview = require("../modals/RatingAndReview")
+const Course = require("../modals/Course")
 const mongoose = require("mongoose")
 
 // Create a new rating and review
@@ -74,16 +74,16 @@ exports.getAverageRating = async (req, res) => {
     // Calculate the average rating using the MongoDB aggregation pipeline
     const result = await RatingAndReview.aggregate([
       {
-        $match: {
-          course: new mongoose.Types.ObjectId(courseId), // Convert courseId to ObjectId
-        },
+        $match:{
+          course : new mongoose.Types.ObjectId(courseId)
+        }
       },
       {
-        $group: {
-          _id: null,
-          averageRating: { $avg: "$rating" },
-        },
-      },
+        $group : {
+          _id : null,
+          averageRating : { $avg : "$rating"}
+        }
+      }
     ])
 
     if (result.length > 0) {
@@ -93,8 +93,8 @@ exports.getAverageRating = async (req, res) => {
       })
     }
 
-    // If no ratings are found, return 0 as the default rating
     return res.status(200).json({ success: true, averageRating: 0 })
+
   } catch (error) {
     console.error(error)
     return res.status(500).json({
@@ -109,14 +109,13 @@ exports.getAverageRating = async (req, res) => {
 exports.getAllRatingReview = async (req, res) => {
   try {
     const allReviews = await RatingAndReview.find({})
-      .sort({ rating: "desc" })
       .populate({
         path: "user",
-        select: "firstName lastName email image", // Specify the fields you want to populate from the "Profile" model
+        select: "firstName lastName email image", 
       })
       .populate({
         path: "course",
-        select: "courseName", //Specify the fields you want to populate from the "Course" model
+        select: "courseName", 
       })
       .exec()
 
@@ -124,11 +123,12 @@ exports.getAllRatingReview = async (req, res) => {
       success: true,
       data: allReviews,
     })
+
   } catch (error) {
     console.error(error)
     return res.status(500).json({
       success: false,
-      message: "Failed to retrieve the rating and review for the course",
+      message: "error in rating and review for the course",
       error: error.message,
     })
   }

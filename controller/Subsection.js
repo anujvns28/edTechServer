@@ -145,3 +145,36 @@ exports.deleteSubSection = async (req, res) => {
     })
   }
 }
+
+
+exports.fetchSubSection = async(req,res) => {
+  try{
+  const subSectionId = req.body.subSectionId;
+  if(!subSectionId){
+    return res.status(500).json({
+      success:false,
+      message:"Please provied subsectionId"
+    })
+  }
+
+  const subSectionData = await SubSection.findById(subSectionId);
+  if(!subSectionData){
+    return res.status(500).json({
+      success:false,
+      message:"This is not valled sectinid"
+    })
+  }
+
+  return res.status(200).json({
+    success:true,
+    message:"Subsection fetched successfull",
+    data:subSectionData
+  })
+  }catch(error){
+    console.error(error)
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching SubSection",
+    })
+  }
+}

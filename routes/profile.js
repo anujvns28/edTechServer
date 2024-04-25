@@ -12,8 +12,9 @@ const {
 const { auth, isStudent } = require("../middleware/auth.js")
 
 
-router.put("/updateDisplayPicture",auth, updateDisplayPicture)
+router.put("/updateDisplayPicture",updateDisplayPicture)
 router.put("/updateProfile",auth,isStudent, updateProfile)
+router.get("/getEnrolledCourses", auth, getEnrolledCourses)
 
 module.exports = router
 
