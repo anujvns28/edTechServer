@@ -9,12 +9,13 @@ const {
     updateDisplayPicture,
     updateProfile
 } = require("../controller/profile.js")
-const { auth, isStudent } = require("../middleware/auth.js")
+const { auth, isStudent, isInstructor } = require("../middleware/auth.js")
 
 
 router.put("/updateDisplayPicture",updateDisplayPicture)
 router.put("/updateProfile",auth,isStudent, updateProfile)
 router.get("/getEnrolledCourses", auth, getEnrolledCourses)
+router.get("/instructorDashboard", auth, isInstructor, instructorDashboard)
 
 module.exports = router
 

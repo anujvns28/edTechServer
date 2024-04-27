@@ -218,6 +218,8 @@ exports.instructorDashboard = async (req, res) => {
       return courseDataWithStats
     })
 
+    console.log(courseData,"this is course data")
+
     res.status(200).json({ courses: courseData })
   } catch (error) {
     console.error(error)
