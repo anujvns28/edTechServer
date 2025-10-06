@@ -28,7 +28,7 @@ app.use(
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend ka URL
+    origin: "https://studynotion-tawny.vercel.app/", // frontend ka URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
