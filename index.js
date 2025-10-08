@@ -28,8 +28,7 @@ app.use(
 
 app.use(
   cors({
-    origin: "http://localhost:3000", // frontend ka URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "*",
     credentials: true,
   })
 );
