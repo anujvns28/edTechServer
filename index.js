@@ -28,7 +28,7 @@ app.use(
 
 app.use(
   cors({
-    origin: "https://studynotion-tawny.vercel.app/", // frontend ka URL
+    origin: "http://localhost:3000", // frontend ka URL
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -45,6 +45,3 @@ app.listen(PORT, () => {
 });
 
 
-
-
-//  starting date 25/02/24
