@@ -22,6 +22,7 @@ const mailSender = async (to, subject, html) => {
     );
 
     console.log("Mail sent:", res.data);
+    console.log("hello");
     return res.data;
   } catch (err) {
     console.error("Mail send error:", err.response?.data || err.message);
