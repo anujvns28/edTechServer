@@ -16,7 +16,7 @@ const mailSender = async (to, subject, html) => {
       {
         headers: {
           "api-key":
-            "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", // ✅ Brevo API key
+            "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", // ✅ Brevo API key
           "Content-Type": "application/json",
         },
       }
